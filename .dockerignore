@@ -1,1 +1,9 @@
-
+.git
+.gitignore
+README.md
+*.log
+.env
+node_modules
+vendor
+database/*.zip
+docs
