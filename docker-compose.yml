@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+
+  web:
+    build: .
+    container_name: taller_web
+
+    ports:
+      - "8080:80"
+
+    environment:
+      DB_HOST: db
+      DB_NAME: taller_mecanico
+      DB_USER: taller_user
+      DB_PASSWORD: taller_password
+
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.11
+
+    container_name: taller_db
+
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: taller_mecanico
+      MYSQL_USER: taller_user
+      MYSQL_PASSWORD: taller_password
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/taller_mecanico.sql:/docker-entrypoint-initdb.d/taller_mecanico.sql
+
+volumes:
+  mysql_data:
