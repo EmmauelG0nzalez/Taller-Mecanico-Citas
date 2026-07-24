@@ -1,20 +1,23 @@
 <?php
 
-$host = getenv("DB_HOST") ?: "sql305.infinityfree.com";
-$usuario = getenv("DB_USER") ?: "if0_42373159";
-$contrasena = getenv("DB_PASSWORD") ?: "tbFFmCvm1qF";
-$base_datos = getenv("DB_NAME") ?: "if0_42373159_taller_mecanico";
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-$conn = new mysqli(
+$host = getenv("DB_HOST");
+$port = (int)(getenv("DB_PORT") ?: 3306);
+$user = getenv("DB_USER");
+$password = getenv("DB_PASSWORD");
+$database = getenv("DB_NAME");
+
+$conn = mysqli_init();
+
+$conn->real_connect(
     $host,
-    $usuario,
-    $contrasena,
-    $base_datos
+    $user,
+    $password,
+    $database,
+    $port,
+    null,
+    MYSQLI_CLIENT_SSL
 );
 
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
-
 $conn->set_charset("utf8mb4");
-?>
