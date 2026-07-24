@@ -1,29 +1,39 @@
 <?php
 
 session_start();
+require_once "conexion.php";
 
-include("conexion.php");
+$correo = trim($_POST["correo"] ?? "");
+$password = $_POST["password"] ?? "";
 
-$correo = $_POST['correo'];
-$password = $_POST['password'];
+$stmt = $conn->prepare(
+    "SELECT id, nombre, correo, password, rol
+     FROM usuarios
+     WHERE correo = ?
+     LIMIT 1"
+);
 
-$sql = "SELECT * FROM usuarios
-WHERE correo='$correo'
-AND password='$password'";
+$stmt->bind_param("s", $correo);
+$stmt->execute();
 
-$resultado = $conn->query($sql);
+$resultado = $stmt->get_result();
 
-if($resultado->num_rows > 0){
-
-    $usuario = $resultado->fetch_assoc();
-
-    $_SESSION['id'] = $usuario['id'];
-    $_SESSION['nombre'] = $usuario['nombre'];
-
-    header("Location: ../frontend/inicio.html");
-
+if ($resultado->num_rows !== 1) {
+    exit("Correo o contraseña incorrectos.");
 }
 
-$conn->close();
+$usuario = $resultado->fetch_assoc();
 
+if (!password_verify($password, $usuario["password"])) {
+    exit("Correo o contraseña incorrectos.");
+}
+
+session_regenerate_id(true);
+
+$_SESSION["id"] = $usuario["id"];
+$_SESSION["nombre"] = $usuario["nombre"];
+$_SESSION["rol"] = $usuario["rol"];
+
+header("Location: ../frontend/inicio.php");
+exit();
 ?>
